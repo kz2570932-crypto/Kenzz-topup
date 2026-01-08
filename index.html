@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+body{background:#000;color:#fff;font-family:Arial;padding:20px}
+.card{background:#111;padding:15px;border-radius:10px;margin-bottom:10px}
+</style>
+</head>
+<body>
+
+<h2>Admin Panel</h2>
+<div id="data"></div>
+
+<script>
+let d=JSON.parse(localStorage.pesanan||"[]");
+data.innerHTML=d.map((x,i)=>`
+<div class="card">
+<b>#${i+1}</b><br>
+User: ${x.user}<br>
+Game: ${x.game}<br>
+Total: Rp ${x.total.toLocaleString("id-ID")}
+</div>`).join("");
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html>
+<head>
+<title>Top Up</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+body{background:url('background.jpg') center/cover fixed;font-family:Arial;color:#fff}
+.overlay{background:rgba(0,0,0,.85);min-height:100vh;padding:20px}
+.card{background:#111;padding:20px;border-radius:15px;max-width:400px;margin:auto}
+input,select,button{width:100%;padding:10px;margin-top:10px;border-radius:8px;border:none}
+button{background:#00ffcc;font-weight:bold}
+</style>
+</head>
+<body>
+<div class="overlay">
+<div class="card">
+
+<h3 id="game"></h3>
+<p id="status"></p>
+
+<input id="idgame" placeholder="ID Game">
+<input id="server" placeholder="Server">
+<select id="paket" onchange="calc()">
+<option value="18000">Paket 1 - Rp18.000</option>
+<option value="36000">Paket 2 - Rp36.000</option>
+</select>
+<input type="number" id="jumlah" value="1" min="1" oninput="calc()">
+
+<h4 id="total"></h4>
+<button onclick="pesan()">Pesan</button>
+
+</div>
+</div>
+
+<script>
+game.innerText=localStorage.game;
+status.innerText=localStorage.role=="owner"?"👑 OWNER (GRATIS)":"👤 USER";
+function calc(){
+ let t=paket.value*jumlah.value;
+ if(localStorage.role=="owner") t=0;
+ total.innerText="Total: Rp "+t.toLocaleString("id-ID");
+}
+calc();
+
+function pesan(){
+ let data=JSON.parse(localStorage.pesanan||"[]");
+ data.push({
+  user:localStorage.user,
+  role:localStorage.role,
+  game:localStorage.game,
+  id:idgame.value,
+  server:server.value,
+  jumlah:jumlah.value,
+  total:localStorage.role=="owner"?0:paket.value*jumlah.value
+ });
+ localStorage.pesanan=JSON.stringify(data);
+ alert("Pesanan berhasil!");
+}
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html>
+<head>
+<title>KenzzAjah Top Up</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+body{margin:0;font-family:Arial;background:url('background.jpg') center/cover fixed;color:#fff}
+.overlay{background:rgba(0,0,0,.8);min-height:100vh;padding:20px}
+header{display:flex;align-items:center;gap:10px}
+header img{width:50px;border-radius:50%}
+input{width:100%;padding:12px;border-radius:30px;border:none;margin:20px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:15px}
+.card{background:#111;padding:15px;border-radius:15px;text-align:center;cursor:pointer}
+.card:hover{transform:scale(1.05)}
+.card img{width:80px}
+</style>
+</head>
+<body>
+<div class="overlay">
+
+<header>
+<img src="logo.png"><h2>KenzzAjah Top Up</h2>
+</header>
+
+<input id="search" placeholder="Cari game..." onkeyup="filter()">
+
+<div class="grid" id="list"></div>
+
+</div>
+
+<script>
+const games=["Mobile Legends","Free Fire","PUBG Mobile","Genshin Impact","Valorant","COD Mobile"];
+function show(arr){
+ list.innerHTML="";
+ arr.forEach(g=>{
+  list.innerHTML+=`<div class="card" onclick="go('${g}')"><img src="https://via.placeholder.com/80"><p>${g}</p></div>`;
+ });
+}
+show(games);
+
+function filter(){
+ let k=search.value.toLowerCase();
+ show(games.filter(g=>g.toLowerCase().includes(k)));
+}
+
+function go(g){
+ localStorage.game=g;
+ location="order.html";
+}
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html>
+<head>
+<title>Login - KenzzAjah</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+body{background:#000;color:#fff;font-family:Arial;display:flex;justify-content:center;align-items:center;height:100vh}
+.box{background:#111;padding:25px;border-radius:15px;width:320px;text-align:center}
+img{width:90px;border-radius:50%;margin-bottom:10px}
+input,button{width:100%;padding:12px;margin-top:10px;border-radius:8px;border:none}
+button{background:#00ffcc;font-weight:bold}
+</style>
+</head>
+<body>
+
+<div class="box">
+<img src="logo.png">
+<h3>Login</h3>
+<input id="user" placeholder="Username">
+<input id="pass" type="password" placeholder="Password">
+<button onclick="login()">Masuk</button>
+</div>
+
+<script>
+function login(){
+ let u=user.value,p=pass.value;
+ if(u=="admin" && p=="admin123"){localStorage.role="admin";location="admin.html";return;}
+ if(u=="kenzz" && p=="kenzz123"){localStorage.user=u;localStorage.role="owner";location="beranda.html";return;}
+ localStorage.user=u;localStorage.role="user";location="beranda.html";
+}
+</script>
+
+</body>
+</html>/topup-kenzz
+├─ index.html        (login)
+├─ beranda.html      (pilih game + search)
+├─ order.html        (top up)
+├─ admin.html        (admin panel)
+├─ background.jpg
+├─ logo.png
